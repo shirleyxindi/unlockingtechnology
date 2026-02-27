@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>Server Access</title>
+<style>
+    body {
+        background-color: #0d1117;
+        color: #00ff88;
+        font-family: monospace;
+        text-align: center;
+    }
+
+    h1 {
+        margin-top: 20px;
+    }
+
+    .timer {
+        font-size: 24px;
+        margin: 10px;
+    }
+
+    .container {
+        margin-top: 20px;
+    }
+
+    button {
+        background-color: #161b22;
+        color: #00ff88;
+        border: 1px solid #00ff88;
+        padding: 10px 20px;
+        margin: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #00ff88;
+        color: black;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .lights-row {
+        margin: 8px;
+    }
+
+    .light {
+        width: 25px;
+        height: 25px;
+        display: inline-block;
+        margin: 3px;
+        border-radius: 4px;
+        background-color: #222;
+        border: 1px solid #555;
+        cursor: pointer;
+    }
+
+    .on {
+        background-color: #00ff88;
+    }
+
+    .error {
+        color: red;
+    }
+
+    .success {
+        color: #00ff88;
+        font-size: 22px;
+        margin-top: 20px;
+    }
+
+    .info-box {
+        background-color: #161b22;
+        border: 1px solid #00ff88;
+        padding: 15px;
+        margin: 15px auto;
+        width: 80%;
+        text-align: left;
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        checkAndResumeHashCooldown(); 
+    });
+</script>
+</head>
+<body>
+
+<h1>🔐 LOCKER ACCESS</h1>
+
+<div id="phase1" class="container">
+    <p>Je hebt een aantal letters beveiligd opgeslagen op je computer, maar je weet het wachtwoord niet meer!</p>
+    <p>Het enige wat je hebt opgescreven zijn een aantal mogelijke wachtwoorden, en de hash van het wachtwoord...</p>
+    
+    <p>Je hebt de volgende mogelijke wachtwoorden:<br><br>
+    DATABASE<br>
+    ALGORITME<br>
+    SCRIPT<br>
+    FIREWALL<br>
+    SOFTWARE<br>
+    SERVER</p>
+    
+    <p>Lees de uitleg over wat een hash is en ontcijfer het wachtwoord met de hash om de kluis te openen.</p>
+    
+    <p>HASH: <strong>85</strong></p>
+    <p>Versleuteling: Tel de alfabetpositie van elke letter op (A=1 ... Z=26)</p>
+
+    <button onclick="toggleInfo()">Wat is een hash?</button>
+
+    <div id="hashInfo" class="info-box hidden">
+        <strong>Wat is een hash?</strong><br><br>
+        Een hash is een manier om een woord om te zetten in een getal of code.<br>
+        De computer slaat niet het echte wachtwoord op, maar alleen de hash.<br><br>
+        Voorbeeld:<br>
+        hash<br>
+        H = 8, A = 1, S = 19, H = 8<br>
+        8 + 1 + 19 + 8 = 36<br><br>
+        hash → 36<br><br>
+    </div>
+
+    <p>Welk wachtwoord hoort bij deze kluis?</p>
+
+    <input type="text" id="passwordInput" placeholder="Voer wachtwoord in">
+    <button onclick="checkPasswordFromInput()">Controleer wachtwoord</button>
+    
+    <p id="hashMessage"></p>
+</div>
+
+<div id="phase2" class="container hidden">
+    <p>SCRIPT was het juiste wachtwoord!</p>
+    <p>Helaas kan je alleen toegang krijgen met een binaire code...</p>
+    <p>Lees de uitleg over binaire codes en voer het wachtwoord in als 8-bit binaire code met onderstaande lampjes.</p>
+    <button onclick="toggleBinaryInfo()">Wat is binaire code?</button>
+    <!-- <button id="binaryHintButton" onclick="revealBinaryHint()">Vraag om hint</button> -->
+
+    <div id="binaryInfo" class="info-box hidden">
+        <strong>Wat is binaire code?</strong><br>
+        Binaire code is een systeem dat alleen de cijfers 0 en 1 gebruikt om informatie weer te geven.<br>
+        Elke positie in een binaire reeks heeft een waarde die een macht van 2 is (bijvoorbeeld, voor 8-bit: 128, 64, 32, 16, 8, 4, 2, 1 van links naar rechts).<br>
+        Een '1' op een positie betekent dat de waarde van die positie meetelt (dat die positie dus 'aan staat'), een '0' betekent dat deze niet meetelt (dat die dus 'uit staat').<br>
+        Bijvoorbeeld, de binaire code `01000001` staat voor: 0*128 + 1*64 + 0*32 + 0*16 + 0*8 + 0*4 + 0*2 + 1*1 = 65.<br>
+        Computers gebruiken binaire code om gegevens te verwerken en op te slaan.<br><br>
+        Elke letter, cijfer of symbool heeft een unieke binaire representatie.<br><br>
+        Hier zijn enkele voorbeelden van hoofdletters in 8-bit binaire code:<br>
+        A: 01000001 (65)<br>
+        B: 01000010 (66)<br>
+        C: 01000011 (67)<br><br>
+    </div>
+
+    <div id="binaryHintsContainer" class="info-box hidden">
+        <div id="binaryHint1" class="hidden">
+            <strong>Hint 1:</strong> Het wachtwoord dat je net hebt gevonden, moet je omzetten naar een binaire code. Elke rij van 8 lampjes staat voor één letter, waarbij '1' een lampje aan is en '0' een lampje uit.<br><br>
+        </div>
+        <div id="binaryHint2" class="hidden">
+            <strong>Hint 2:</strong> Hier is de tabel voor de letters in binaire code:<br>
+            <pre>
+            A: 01000001  N: 01001110
+            B: 01000010  O: 01001111
+            C: 01000011  P: 01010000
+            D: 01000100  Q: 01010001
+            E: 01000101  R: 01010010
+            F: 01000110  S: 01010011
+            G: 01000111  T: 01010100
+            H: 01001000  U: 01010101
+            I: 01001001  V: 01010110
+            J: 01001010  W: 01010111
+            K: 01001011  X: 01011000
+            L: 01001100  Y: 01011001
+            M: 01001101  Z: 01011010
+            </pre>
+        </div>
+    </div>
+
+    <div id="binaryInput"></div>
+    <button onclick="checkBinary()">Controleer binaire code</button>
+    <p id="binaryMessage"></p>
+</div>
+
+<div id="successScreen" class="hidden success">
+    ✅ ACCESS GRANTED<br>
+    De letters zijn: <strong>CHNE</strong>
+</div>
+
+<script>
+
+function toggleInfo() {
+    document.getElementById("hashInfo").classList.toggle("hidden");
+}
+
+function toggleBinaryInfo() {
+    document.getElementById("binaryInfo").classList.toggle("hidden");
+}
+
+let binaryHintIndex = 0; 
+
+function revealBinaryHint() {
+    const binaryHintsContainer = document.getElementById("binaryHintsContainer");
+    const hintButton = document.getElementById("binaryHintButton");
+
+    if (binaryHintsContainer.classList.contains("hidden")) {
+        binaryHintsContainer.classList.remove("hidden");
+    }
+
+    if (binaryHintIndex === 0) {
+        document.getElementById("binaryHint1").classList.remove("hidden");
+        binaryHintIndex++;
+        hintButton.textContent = "Vraag om volgende hint";
+    } else if (binaryHintIndex === 1) {
+        document.getElementById("binaryHint2").classList.remove("hidden");
+        binaryHintIndex++;
+        hintButton.textContent = "Geen hints meer beschikbaar";
+        hintButton.disabled = true; 
+    }
+}
+
+function calculateHash(word) {
+    let sum = 0;
+    word = word.toUpperCase();
+    for (let i = 0; i < word.length; i++) {
+        sum += word.charCodeAt(i) - 64;
+    }
+    return sum;
+}
+
+let hashCooldownActive = false;
+
+function checkPasswordFromInput() {
+    const passwordInput = document.getElementById("passwordInput"); 
+    const enteredPassword = passwordInput.value.trim();
+    checkPassword(enteredPassword);
+}
+
+function startHashCooldown(initialSeconds) {
+    const passwordInput = document.getElementById("passwordInput");
+    const checkButton = document.querySelector("#phase1 button[onclick='checkPasswordFromInput()']");
+    let message = document.getElementById("hashMessage");
+
+    hashCooldownActive = true; 
+    passwordInput.disabled = true;
+    checkButton.disabled = true;
+    passwordInput.value = ""; 
+
+    let cooldownSeconds = initialSeconds;
+    message.textContent = `❌ Verkeerd wachtwoord. Probeer opnieuw over ${cooldownSeconds} seconden.`;
+    message.className = "error";
+
+    const cooldownInterval = setInterval(() => {
+        cooldownSeconds--;
+        message.textContent = `❌ Verkeerd wachtwoord. Probeer opnieuw over ${cooldownSeconds} seconden.`;
+        if (cooldownSeconds <= 0) {
+            clearInterval(cooldownInterval);
+            hashCooldownActive = false; 
+            passwordInput.disabled = false;
+            checkButton.disabled = false;
+            message.textContent = ""; 
+            localStorage.removeItem('hashCooldownEndTime'); 
+        }
+    }, 1000);
+}
+
+function checkAndResumeHashCooldown() {
+    const storedCooldownEndTime = localStorage.getItem('hashCooldownEndTime');
+    if (storedCooldownEndTime) {
+        const remainingTime = Math.ceil((parseInt(storedCooldownEndTime) - Date.now()) / 1000);
+        if (remainingTime > 0) {
+            startHashCooldown(remainingTime);
+        } else {
+            localStorage.removeItem('hashCooldownEndTime'); 
+        }
+    }
+}
+
+function checkPassword(word) {
+    if (hashCooldownActive) {
+        return;
+    }
+
+    let message = document.getElementById("hashMessage");
+
+    if (calculateHash(word) === 85) {
+        message.textContent = "Correct! Hash komt overeen."; 
+        message.className = "success";
+        document.getElementById("phase1").classList.add("hidden");
+        document.getElementById("phase2").classList.remove("hidden");
+        generateBinaryGrid(); 
+        localStorage.removeItem('hashCooldownEndTime');
+    } else {
+        localStorage.setItem('hashCooldownEndTime', Date.now() + 30 * 1000); 
+        startHashCooldown(30);
+    }
+}
+
+const correctBinary = [
+    "01010011",
+    "01000011",
+    "01010010", 
+    "01001001",
+    "01010000",
+    "01010100"
+];
+
+function generateBinaryGrid() {
+    let container = document.getElementById("binaryInput");
+    container.innerHTML = ""; 
+
+    for (let r = 0; r < correctBinary.length; r++) {
+        let row = document.createElement("div");
+        row.className = "lights-row";
+
+        for (let c = 0; c < 8; c++) {
+            let light = document.createElement("div");
+            light.className = "light";
+            light.dataset.value = "0";
+            light.onclick = function () {
+                if (this.dataset.value === "0") {
+                    this.dataset.value = "1";
+                    this.classList.add("on");
+                } else {
+                    this.dataset.value = "0";
+                    this.classList.remove("on");
+                }
+            };
+            row.appendChild(light);
+        }
+        container.appendChild(row);
+    }
+}
+
+function checkBinary() {
+    let rows = document.querySelectorAll(".lights-row");
+    let correct = true;
+
+    rows.forEach((row, index) => {
+        let lights = row.querySelectorAll(".light");
+        let binaryString = "";
+        lights.forEach(light => {
+            binaryString += light.dataset.value;
+        });
+
+        if (binaryString !== correctBinary[index]) {
+            correct = false;
+        }
+    });
+
+    let message = document.getElementById("binaryMessage");
+
+    if (correct) {
+        document.getElementById("phase2").classList.add("hidden");
+        document.getElementById("successScreen").classList.remove("hidden");
+        message.textContent = "";
+    } else {
+        message.textContent = "Binaire code incorrect. Controleer je invoer.";
+        message.className = "error";
+    }
+}
+</script>
+
+</body>
+</html>
